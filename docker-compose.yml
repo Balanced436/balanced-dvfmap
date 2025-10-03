@@ -5,14 +5,14 @@ services:
     image: dvf
     build:
       context: DVF
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
     environment:
       NODE_ENV: production
     ports:
       - 8080:8080
   db:
     image: custom
-    build: 
+    build:
       context: DB
       dockerfile: ./Dockerfile
     environment:
