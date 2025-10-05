@@ -5,7 +5,6 @@ const getPool = () => {
     ? process.env.DATABASE_URL
       : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
 
-  console.info(`Utilisation de la base de données : ${connectionString}\n`);
   return new Pool({
     connectionString,
   });

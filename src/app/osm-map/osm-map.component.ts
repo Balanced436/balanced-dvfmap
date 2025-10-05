@@ -273,8 +273,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
                   this.basicStyle(myGeoJson),
                 );
 
-
-                console.info(this.myLayers['departement']);
+                  console.info(this.myLayers['departement']);
               });
             });
         });
