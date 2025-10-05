@@ -11,4 +11,6 @@ export class LegendComponent implements OnInit {
 
   constructor() {}
   ngOnInit(): void {}
+
+
 }

@@ -117,6 +117,8 @@ export abstract class Analyse {
 
   createDiv() {
     const div = document.createElement('div');
+    div.style.display = 'flex';
+    div.style.justifyContent = 'center';
     div.id = this.nomAnalyse;
     return div;
   }
@@ -133,10 +135,12 @@ export abstract class Analyse {
     return compile(this.createSpec(), { config: this.getConfig() }).spec;
   }
   createVegaView(): View {
-    this.appendDiv();
     const vegaSpec = compile(this.createSpec(), {
       config: this.getConfig(),
     }).spec;
+    console.log(vegaSpec.data);
+
+    this.appendDiv();
     return new vega.View(vega.parse(vegaSpec))
       .renderer('canvas')
       .initialize('#' + this.nomAnalyse)

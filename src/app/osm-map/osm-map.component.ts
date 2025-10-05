@@ -10,16 +10,16 @@ import {
   NgZone,
 } from '@angular/core';
 import {
-  Map,
-  ZoomAnimEvent,
-  Layer,
-  MapOptions,
-  tileLayer,
-  latLng,
-  geoJSON,
-  geoJson,
-  LeafletMouseEvent,
-  popup,
+    Map,
+    ZoomAnimEvent,
+    Layer,
+    MapOptions,
+    tileLayer,
+    latLng,
+    geoJSON,
+    geoJson,
+    LeafletMouseEvent,
+    popup, gridLayer,
 } from 'leaflet';
 import { CONFIG } from '../configuration/config';
 import { HttpClientODS } from '../../services/http-client-open-data-soft.service';
@@ -33,6 +33,7 @@ import { CommonModule } from '@angular/common';
 import { GeoJSON } from 'leaflet';
 import { Legend } from '../models/legend.model';
 import * as _ from 'lodash';
+import {forkJoin, tap} from "rxjs";
 
 @Component({
   selector: 'ngbd-offcanvas-content',
@@ -42,48 +43,59 @@ import * as _ from 'lodash';
     <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
       <li [ngbNavItem]="1">
         <button ngbNavLink>Statistiques</button>
-        <ng-template ngbNavContent>
-          <h5 class="offcanvas-title">{{ nom }}</h5>
-          <p *ngIf="stats">
-            Prix médian du m<sup>2</sup> des maisons :
-            {{
-              stats['nombre_vente_maisons'] < 3
-                ? 'pas assez de données'
-                : (stats['prix_m2_median_maisons'] | currency: 'EUR')
-            }}
-            <br />
-            Prix médian du m<sup>2</sup> des appartements :
-            {{
-              stats['nombre_vente_appartements'] < 3
-                ? 'pas assez de données'
-                : (stats['prix_m2_median_appartements'] | currency: 'EUR')
-            }}
-            <br />
-            nombre de maisons vendues :
-            {{
-              stats['nombre_vente_maisons'] ? stats['nombre_vente_maisons'] : 0
-            }}
-            <br />
-            nombre d'appartements vendus :
-            {{
-              stats['nombre_vente_appartements']
-                ? stats['nombre_vente_appartements']
-                : 0
-            }}
-          </p>
-        </ng-template>
+          <ng-template ngbNavContent>
+              <div class="p-4">
+                  <h5 class="offcanvas-title text-black text-xl font-semibold mb-4">{{ nom }}</h5>
+                  <div *ngIf="stats" class="text-black space-y-2">
+                      <div>
+                          <strong>Prix médian du m<sup>2</sup> des maisons :</strong>
+                          {{
+                              stats['nombre_vente_maisons'] < 3
+                                      ? 'pas assez de données'
+                                      : (stats['prix_m2_median_maisons'] | currency: 'EUR')
+                          }}
+                      </div>
+                      <div>
+                          <strong>Prix médian du m<sup>2</sup> des appartements :</strong>
+                          {{
+                              stats['nombre_vente_appartements'] < 3
+                                      ? 'pas assez de données'
+                                      : (stats['prix_m2_median_appartements'] | currency: 'EUR')
+                          }}
+                      </div>
+                      <div>
+                          <strong>Nombre de maisons vendues :</strong>
+                          {{
+                              stats['nombre_vente_maisons'] || 0
+                          }}
+                      </div>
+                      <div>
+                          <strong>Nombre d'appartements vendus :</strong>
+                          {{
+                              stats['nombre_vente_appartements'] || 0
+                          }}
+                      </div>
+                  </div>
+              </div>
+          </ng-template>
+
       </li>
-      <li [ngbNavItem]="2">
-        <button ngbNavLink>Infographies</button>
-        <ng-template ngbNavContent>
-          <h5 class="offcanvas-title">{{ nom }}</h5>
-          <div class="offcanvas-header"></div>
-          <div class="offcanvas-body">
-            <div id="analyse"></div>
-            <app-analyse-multiple [analyses]="analyses"> </app-analyse-multiple>
-          </div>
-        </ng-template>
-      </li>
+        <li [ngbNavItem]="2">
+            <button ngbNavLink class="text-base font-medium text-gray-700 hover:text-blue-600">
+                Infographies
+            </button>
+            <ng-template ngbNavContent>
+                <div class="p-4">
+                    <h5 class="offcanvas-title text-black text-xl font-semibold mb-4 px-1">
+                        {{ nom }}
+                    </h5>
+                </div>
+                    <div class="offcanvas-body border-1 border-dark px-0 py-0 flex-column justify-content-center">
+                        <div id="analyse" class="w-full border-1 "></div>
+                        <app-analyse-multiple [analyses]="analyses"></app-analyse-multiple>
+                    </div>
+            </ng-template>
+        </li>
     </ul>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
   `,
@@ -131,7 +143,8 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   layers: Layer[] = [];
   layersControl: any;
   analyses!: Analyse[];
-  myLayers: { [name: string]: GeoJSON } = {};
+    isloading: boolean = true;
+    myLayers: { [name: string]: GeoJSON } = {};
   legend!: Legend | undefined;
   descriptionsLegend: { [name: string]: string } = {
     nombre_vente_maisons: 'Les ventes de maisons',
@@ -140,8 +153,11 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     prix_m2_median_appartements: 'Prix médian des appartements',
   };
 
+  departementClickHandler: (e: LeafletMouseEvent) => void =()=>{}
+
   @Output() map$: EventEmitter<Map> = new EventEmitter();
   @Output() zoom$: EventEmitter<number> = new EventEmitter();
+
   @Input() options: MapOptions = {
     layers: [
       tileLayer(CONFIG.tiles, {
@@ -246,17 +262,19 @@ export class OsmMapComponent implements OnInit, OnDestroy {
                 myGeoJson.setStyle(this.defaultStyle);
 
                 // Configurer le gestionnaire d'événements pour les clics
+                  this.departementClickHandler = this.getAnalyseOnClick(this.postresql.getAnalyseDepartement);
                 let createdHandler = this.getAnalyseOnClick(
                   this.postresql.getAnalyseDepartement,
                 );
-                myGeoJson.on('click', (_e: LeafletMouseEvent) => {
-                  createdHandler(_e);
-                });
+                  myGeoJson.on('click', this.departementClickHandler);
 
                 // Ajouter la couche GeoJSON à la couche des départements avec le style de base
                 this.myLayers['departement'].addLayer(
                   this.basicStyle(myGeoJson),
                 );
+
+
+                console.info(this.myLayers['departement']);
               });
             });
         });
@@ -318,72 +336,53 @@ export class OsmMapComponent implements OnInit, OnDestroy {
    * @param http Le service HttpClientODS utilisé pour effectuer les requêtes HTTP.
    */
   private initCommunesTiles(http: HttpClientODS) {
-    // Effectuer une requête HTTP pour obtenir les données des communes
+      http.getCommunes().subscribe((response) => {
+          const communeRequests = response.map((value) => {
+              const communeCode = value['com_code'][0];
+              const nomCommune = value['com_name'];
+              const geometrie = value['geo_shape'];
 
-    http.getCommunes().subscribe(
-      (response) => {
-        response.forEach((value) => {
-          let communeCode = value['com_code'][0];
-          // Effectuer une requête HTTP pour obtenir les données de vente de la commune
-          this.postresql.getVenteCommune(communeCode).subscribe(
-            (dataVente) => {
-              // Effectuer une requête HTTP pour obtenir les données de prix médian de la commune
-              this.postresql.getPrixMedianCommune(communeCode).subscribe(
-                (dataPrixMedian) => {
-                  // Effectuer une requête HTTP pour obtenir les statistiques de la commune
-                  this.postresql.getStatsCommune(communeCode).subscribe(
-                    (stats) => {
-                      let nomCommune = value['com_name'];
-                      let geometrie = value['geo_shape'];
-                      let myJson = JSON.parse(JSON.stringify(geometrie));
-                      let myGeoJson;
-
-                      // Ajouter les données aux propriétés GeoJSON
-                      myJson['properties']['vente'] = dataVente;
-                      myJson['properties']['prix_median'] = dataPrixMedian;
+              return forkJoin({
+                  vente: this.postresql.getVenteCommune(communeCode),
+                  prixMedian: this.postresql.getPrixMedianCommune(communeCode),
+                  stats: this.postresql.getStatsCommune(communeCode),
+              }).pipe(
+                  // traitement final pour chaque commune
+                  tap(({ vente, prixMedian, stats }) => {
+                      const myJson = JSON.parse(JSON.stringify(geometrie));
+                      myJson['properties']['vente'] = vente;
+                      myJson['properties']['prix_median'] = prixMedian;
                       myJson['properties']['nom'] = nomCommune;
                       myJson['properties']['stats'] = stats;
-                      myGeoJson = geoJSON(myJson);
-                      let createdHandler = this.getAnalyseOnClick(
-                        this.postresql.getAnalyseParCommune,
-                      );
-                      // Lier une fenêtre contextuelle à la couche GeoJSON
-                      myGeoJson.bindPopup('' + nomCommune, this.popupOption);
 
-                      // Configurer le gestionnaire d'événements pour les clics
-                      myGeoJson.on('click', (_e: LeafletMouseEvent) => {
-                        createdHandler(_e);
-                      });
-                      this.myLayers['commune'].addLayer(
-                        this.basicStyle(myGeoJson),
-                      );
-                    },
-                    (e: Error) => {
-                      console.error(e);
-                    },
-                    () => {},
-                  );
-                },
-                (e: Error) => {
-                  console.error(e);
-                },
-                () => {},
+                      const myGeoJson = geoJSON(myJson);
+                      const createdHandler = this.getAnalyseOnClick(this.postresql.getAnalyseParCommune);
+
+                      myGeoJson.bindPopup(nomCommune, this.popupOption);
+                      myGeoJson.on('click', (_e: LeafletMouseEvent) => createdHandler(_e));
+                      this.myLayers['commune'].addLayer(this.basicStyle(myGeoJson));
+                  })
               );
-            },
-            (e: Error) => {
-              console.error(e);
-            },
-            () => {},
-          );
-        });
-      },
-      (e: Error) => {
-        console.error(e);
-      },
-    );
+          });
+
+          // Attendre que toutes les communes soient traitées
+          forkJoin(communeRequests).subscribe({
+              next: () => {
+                  this.setActiveLayer('commune');
+                  this.setChloroplethView('nombre_vente_appartements')
+
+                  this.isloading = false
+              },
+              error: (e) => console.error(e),
+          });
+      });
   }
 
-  /**
+
+
+
+
+    /**
    *
    * Initialise les données IRIS
    *
@@ -467,12 +466,17 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         },
         _e.sourceTarget.feature.properties.nom,
       );
-      console.info(_e.sourceTarget);
-      this.open(
-        this.analyses,
-        _e.sourceTarget.feature.properties.stats[0],
-        _e.sourceTarget.feature.properties.nom,
-      );
+        let stat = _e.sourceTarget.feature.properties.stats[0];
+        const isvalid = Object.entries(stat).map(([key,val])=>val).every((e)=>e)
+        if (isvalid){
+            this.open(
+            this.analyses,
+            stat,
+            _e.sourceTarget.feature.properties.nom,
+          );
+        }else {
+            console.info("debug alerte")
+        }
     };
   }
 

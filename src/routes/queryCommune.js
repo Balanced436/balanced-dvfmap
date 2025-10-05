@@ -1,9 +1,9 @@
 const Pool = require("pg").Pool;
-
+require('dotenv').config();
 const getPool = () => {
   const connectionString = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
-    : "postgres://postgres:sagrandmere@db:5432/dvf";
+    : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
 
   console.info(`Utilisation de la base de données : ${connectionString}\n`);
   return new Pool({
@@ -15,7 +15,6 @@ const pool = getPool();
 
 const vente = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("Type local vendu par commune et par année : " + codeinsee);
   pool.query(
     `SELECT
     anneemut,
@@ -183,7 +182,6 @@ const venteAnneeCommune = (request, response) => {
 
 const prixMedian = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("Type local vendu par commune et par année : " + codeinsee);
   pool.query(
     `SELECT
     anneemut,
@@ -223,7 +221,6 @@ const prixMedian = (request, response) => {
 
 const prixMedianMaisonAppartementCommune = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("Type local vendu par commune et par année : " + codeinsee);
   pool.query(
     `SELECT
     CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY valeurfonc) AS NUMERIC(10,2)) as prix_m2_median,
@@ -258,7 +255,6 @@ const prixMedianMaisonAppartementCommune = (request, response) => {
 
 const stats = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("Type local vendu par commune et par année : " + codeinsee);
   pool.query(
     `WITH stats_maisons AS(
       SELECT

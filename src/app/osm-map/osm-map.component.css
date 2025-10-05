@@ -39,3 +39,14 @@ i {
 .leaflet-control-zoom {
   display: none;
 }
+
+.fade-legend {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.fade-legend.show {
+    opacity: 1;
+    transform: translateY(0);
+}

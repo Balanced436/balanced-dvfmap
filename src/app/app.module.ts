@@ -6,13 +6,14 @@ import { AppComponent } from './app.component';
 import { OsmMapComponent } from './osm-map/osm-map.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { NgxSidebarControlModule } from '@runette/ngx-leaflet-sidebar';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {NgbModule, NgbToast} from '@ng-bootstrap/ng-bootstrap';
 import { CanvasModule } from './canvas/canvas.module';
 import { AnalyseMultipleComponent } from './analyse-multiple/analyse-multiple.component';
 import { AnalyseComponent } from './analyse/analyse.component';
 import { LegendComponent } from './legend/legend.component';
 import { registerLocaleData } from '@angular/common';
 import * as fr from '@angular/common/locales/fr';
+import {AlertModule} from "ngx-bootstrap/alert";
 
 @NgModule({
   declarations: [AppComponent, OsmMapComponent, LegendComponent],
@@ -23,6 +24,8 @@ import * as fr from '@angular/common/locales/fr';
     NgxSidebarControlModule,
     NgbModule,
     CanvasModule,
+      AlertModule,
+      NgbToast
   ],
   providers: [
     {

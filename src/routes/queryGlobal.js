@@ -1,9 +1,10 @@
 const Pool = require("pg").Pool;
+require('dotenv').config();
 
 const getPool = () => {
   const connectionString = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
-    : "postgres://postgres:sagrandmere@db:5432/dvf";
+      : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
 
   console.info(`Utilisation de la base de données : ${connectionString}\n`);
   return new Pool({
@@ -171,7 +172,6 @@ group by l_codinsee`,
 };
 
 const prixMedian = (request, response) => {
-  console.info("Evolution prix par type de local");
   pool.query(
     `SELECT
     anneemut,
