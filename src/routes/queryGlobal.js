@@ -1,10 +1,10 @@
 const Pool = require("pg").Pool;
-require('dotenv').config();
+require("dotenv").config();
 
 const getPool = () => {
   const connectionString = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
-      : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
+    : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
 
   return new Pool({
     connectionString,
@@ -44,7 +44,7 @@ const natureMutationGlobal = (request, response) => {
         throw error;
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -79,13 +79,13 @@ ORDER by anneemut ASC`,
     (error, results) => {
       if (error) {
         console.info(error);
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -124,16 +124,15 @@ const typeLocalGlobal = (request, response) => {
       anneemut ASC;`,
     (error, results) => {
       if (error) {
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
-
 
 const typeLocalVenduParCommune = (request, response) => {
   pool.query(
@@ -156,13 +155,13 @@ and nbcomm = 1
 group by l_codinsee`,
     (error, results) => {
       if (error) {
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -191,13 +190,13 @@ GROUP BY anneemut
 ORDER BY anneemut ASC`,
     (error, results) => {
       if (error) {
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -220,13 +219,13 @@ AND nblocmai = 0
 AND nblocapt > 0`,
     (error, results) => {
       if (error) {
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -255,16 +254,15 @@ const stats = (request, response) => {
     FROM stats_maisons FULL OUTER JOIN stats_appartements on TRUE`,
     (error, results) => {
       if (error) {
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
-
 
 module.exports = {
   vente,
@@ -273,5 +271,5 @@ module.exports = {
   typeLocalGlobal,
   typeLocalVenduParCommune,
   prixMedianMaisonAppartement,
-  stats
+  stats,
 };

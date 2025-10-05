@@ -1,8 +1,8 @@
-import * as vega from 'vega';
-import { Config, compile } from 'vega-lite';
-import { TopLevelSpec } from 'vega-lite/build/src/spec';
-import { CONFIGVEGA } from '../configuration/config.vega';
-import { View } from 'vega';
+import * as vega from "vega";
+import { Config, compile } from "vega-lite";
+import { TopLevelSpec } from "vega-lite/build/src/spec";
+import { CONFIGVEGA } from "../configuration/config.vega";
+import { View } from "vega";
 
 export abstract class Analyse {
   private _schema: string | undefined;
@@ -108,7 +108,7 @@ export abstract class Analyse {
   ) {
     this._schema = CONFIGVEGA.schema;
     this._config = <Config>CONFIGVEGA.theme;
-    this._elementHtml = document.createElement('div');
+    this._elementHtml = document.createElement("div");
     this._elementHtml.id = nomAnalyse;
     const app = document.getElementById(nomAnalyse);
     app?.append(this._elementHtml);
@@ -116,15 +116,15 @@ export abstract class Analyse {
   abstract createSpec(): TopLevelSpec;
 
   createDiv() {
-    const div = document.createElement('div');
-    div.style.display = 'flex';
-    div.style.justifyContent = 'center';
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.justifyContent = "center";
     div.id = this.nomAnalyse;
     return div;
   }
 
   appendDiv() {
-    const app = document.getElementById('analyse');
+    const app = document.getElementById("analyse");
     app?.append(this.createDiv());
   }
   getConfig(): Config {
@@ -141,8 +141,8 @@ export abstract class Analyse {
 
     this.appendDiv();
     return new vega.View(vega.parse(vegaSpec))
-      .renderer('canvas')
-      .initialize('#' + this.nomAnalyse)
+      .renderer("canvas")
+      .initialize("#" + this.nomAnalyse)
       .run();
   }
 

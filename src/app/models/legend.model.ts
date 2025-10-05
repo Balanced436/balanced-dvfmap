@@ -1,14 +1,14 @@
-import _ from 'lodash';
-import * as math from 'mathjs';
+import _ from "lodash";
+import * as math from "mathjs";
 export class Legend {
   color: string[] = [];
   data: number[] = [];
   threshold;
   type!:
-    | 'nombre_vente_maisons'
-    | 'nombre_vente_appartements'
-    | 'prix_m2_median_maisons'
-    | 'prix_m2_median_appartements';
+    | "nombre_vente_maisons"
+    | "nombre_vente_appartements"
+    | "prix_m2_median_maisons"
+    | "prix_m2_median_appartements";
 
   /**
    * @param layerName - Nom de la couche.
@@ -22,10 +22,10 @@ export class Legend {
     public description: string,
     layer: any,
     type:
-      | 'nombre_vente_maisons'
-      | 'nombre_vente_appartements'
-      | 'prix_m2_median_maisons'
-      | 'prix_m2_median_appartements',
+      | "nombre_vente_maisons"
+      | "nombre_vente_appartements"
+      | "prix_m2_median_maisons"
+      | "prix_m2_median_appartements",
     public decomposition: { prob: number[]; couleur: string[] },
   ) {
     this.type = type;
@@ -54,7 +54,7 @@ export class Legend {
     switch (this.type) {
       // Sélectionne la fonction de style en fonction du type
 
-      case 'prix_m2_median_maisons':
+      case "prix_m2_median_maisons":
         fn = (feature: any) => {
           const getColor = (d: number) => {
             let i = this.threshold.findIndex((value: number) => value > d);
@@ -64,18 +64,18 @@ export class Legend {
           return {
             // Si le nombre de vente de maison est inférrieur à 3 on indique que le prix n'est pas significatif
             fillColor:
-              feature.properties.stats[0]['nombre_vente_maisons'] < 3 ||
-              feature.properties.stats[0]['nombre_vente_maisons'] == null
-                ? '#ffffff'
+              feature.properties.stats[0]["nombre_vente_maisons"] < 3 ||
+              feature.properties.stats[0]["nombre_vente_maisons"] == null
+                ? "#ffffff"
                 : getColor(feature.properties.stats[0][this.type]),
             weight: 1,
             opacity: 1,
-            color: 'white',
+            color: "white",
             fillOpacity: 0.5,
           };
         };
         break;
-      case 'prix_m2_median_appartements':
+      case "prix_m2_median_appartements":
         // Fonction de style pour le type 'prix_m2_median_appartements'
         fn = (feature: any) => {
           const getColor = (d: number) => {
@@ -86,13 +86,13 @@ export class Legend {
           return {
             // Si le nombre de vente d'appartement est inférrieur à 3 on indique que le prix n'est pas significatif
             fillColor:
-              feature.properties.stats[0]['nombre_vente_appartements'] < 3 ||
-              feature.properties.stats[0]['nombre_vente_appartements'] == null
-                ? '#ffffff'
+              feature.properties.stats[0]["nombre_vente_appartements"] < 3 ||
+              feature.properties.stats[0]["nombre_vente_appartements"] == null
+                ? "#ffffff"
                 : getColor(feature.properties.stats[0][this.type]),
             weight: 1,
             opacity: 1,
-            color: 'white',
+            color: "white",
             fillOpacity: 0.5,
           };
         };
@@ -109,7 +109,7 @@ export class Legend {
             fillColor: getColor(feature.properties.stats[0][this.type]),
             weight: 1,
             opacity: 1,
-            color: 'white',
+            color: "white",
             fillOpacity: 0.5,
           };
         };
@@ -124,10 +124,10 @@ export class Legend {
    */
   extractDataFromLayer(
     type:
-      | 'nombre_vente_maisons'
-      | 'nombre_vente_appartements'
-      | 'prix_m2_median_maisons'
-      | 'prix_m2_median_appartements',
+      | "nombre_vente_maisons"
+      | "nombre_vente_appartements"
+      | "prix_m2_median_maisons"
+      | "prix_m2_median_appartements",
   ) {
     // Si
     // Définition de la fonction d'extraction des données
@@ -143,14 +143,14 @@ export class Legend {
       };
     } else {
       switch (this.type) {
-        case 'prix_m2_median_maisons':
+        case "prix_m2_median_maisons":
           fn = (l: any) => {
             // Obtention de l'index de la première clé du layer
             let index = Object.keys(l._layers)[0];
             // Obtention de la valeur correspondante au type spécifié
             let value =
               l._layers[index].feature.properties.stats[0][
-                'nombre_vente_maisons'
+                "nombre_vente_maisons"
               ] < 3
                 ? null
                 : l._layers[index].feature.properties.stats[0][type];
@@ -158,7 +158,7 @@ export class Legend {
             return value == null ? 0 : value;
           };
           break;
-        case 'prix_m2_median_appartements':
+        case "prix_m2_median_appartements":
           fn = (l: any) => {
             // Obtention de l'index de la première clé du layer
             let index = Object.keys(l._layers)[0];
@@ -166,7 +166,7 @@ export class Legend {
             // Le prix du m2 sur moin de deux ventes n'a pas de sens
             let value =
               l._layers[index].feature.properties.stats[0][
-                'nombre_vente_appartements'
+                "nombre_vente_appartements"
               ] < 3
                 ? null
                 : l._layers[index].feature.properties.stats[0][type];
@@ -185,8 +185,8 @@ export class Legend {
   isCurrency(): boolean {
     // Vérifie si le type est 'prix_m2_median_maisons' ou 'prix_m2_median_appartements'
     return (
-      this.type == 'prix_m2_median_maisons' ||
-      this.type == 'prix_m2_median_appartements'
+      this.type == "prix_m2_median_maisons" ||
+      this.type == "prix_m2_median_appartements"
     );
   }
 

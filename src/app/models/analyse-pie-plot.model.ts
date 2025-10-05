@@ -1,7 +1,7 @@
-import { TopLevelSpec, compile } from 'vega-lite';
-import { Aggregate } from 'vega-lite/build/src/aggregate';
-import { StandardType } from 'vega-lite/build/src/type';
-import { Analyse } from './analyse.model';
+import { TopLevelSpec, compile } from "vega-lite";
+import { Aggregate } from "vega-lite/build/src/aggregate";
+import { StandardType } from "vega-lite/build/src/type";
+import { Analyse } from "./analyse.model";
 
 export class AnalysePiePlot extends Analyse {
   constructor(
@@ -21,10 +21,10 @@ export class AnalysePiePlot extends Analyse {
   }
   createSpec(): TopLevelSpec {
     return {
-      $schema: 'https://vega.github.io/schema/vega-lite/v5.json',
+      $schema: "https://vega.github.io/schema/vega-lite/v5.json",
       title: this.titre,
       data: { url: this.url },
-      mark: { type: 'arc', tooltip: true },
+      mark: { type: "arc", tooltip: true },
       encoding: {
         theta: {
           aggregate: <Aggregate>this.thetaAgregate,

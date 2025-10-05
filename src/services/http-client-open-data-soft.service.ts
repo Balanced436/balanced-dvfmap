@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { CONFIG } from 'src/app/configuration/config';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { CONFIG } from "src/app/configuration/config";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class HttpClientODS {
-  private params = new HttpParams().append('where', "year = date'2022'");
-  private type = 'exports/';
-  private exportFormat = 'json';
+  private params = new HttpParams().append("where", "year = date'2022'");
+  private type = "exports/";
+  private exportFormat = "json";
   private openDataSoftUrl = CONFIG.urlOpenDataSoft;
   private communeDatasetID = CONFIG.communesDatasetID;
   private epciDatasetID = CONFIG.epciDatasetID;
@@ -36,7 +36,7 @@ export class HttpClientODS {
   }
 
   getIRIS() {
-    return this.http.get<[]>('/assets/custom_IRIS.json');
+    return this.http.get<[]>("/assets/custom_IRIS.json");
   }
 
   getDepartement() {

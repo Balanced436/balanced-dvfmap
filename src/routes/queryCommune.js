@@ -1,5 +1,5 @@
 const Pool = require("pg").Pool;
-require('dotenv').config();
+require("dotenv").config();
 const getPool = () => {
   const connectionString = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
@@ -41,23 +41,23 @@ SELECT
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 /**
  * Récupère le nombre de mutations pour chaque nature de mutation (vente, donation, etc.)
  * pour une commune spécifique identifiée par son code INSEE.
-*
-* @param {Object} request - Requête HTTP reçue par le serveur
-* @param {Object} response - Réponse HTTP à renvoyer au client
-* @returns {void}
-*/
+ *
+ * @param {Object} request - Requête HTTP reçue par le serveur
+ * @param {Object} response - Réponse HTTP à renvoyer au client
+ * @returns {void}
+ */
 const natureMutationCommune = (request, response) => {
   const codeinsee = request.params.codeinsee;
   pool.query(
@@ -79,13 +79,13 @@ const natureMutationCommune = (request, response) => {
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -124,13 +124,13 @@ const typeLocalCommune = (request, response) => {
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -165,16 +165,15 @@ const venteAnneeCommune = (request, response) => {
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
-
 
 const prixMedian = (request, response) => {
   const codeinsee = request.params.codeinsee;
@@ -205,13 +204,13 @@ const prixMedian = (request, response) => {
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -239,13 +238,13 @@ const prixMedianMaisonAppartementCommune = (request, response) => {
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -277,13 +276,13 @@ const stats = (request, response) => {
     [codeinsee],
     (error, results) => {
       if (error) {
-                  return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
@@ -294,5 +293,5 @@ module.exports = {
   typeLocalCommune,
   venteAnneeCommune,
   prixMedianMaisonAppartementCommune,
-  stats
+  stats,
 };

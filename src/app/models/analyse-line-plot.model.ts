@@ -1,6 +1,6 @@
-import { TopLevelSpec, compile } from 'vega-lite';
-import { StandardType } from 'vega-lite/build/src/type';
-import { Analyse } from './analyse.model';
+import { TopLevelSpec, compile } from "vega-lite";
+import { StandardType } from "vega-lite/build/src/type";
+import { Analyse } from "./analyse.model";
 export class AnalyseLinePlot extends Analyse {
   constructor(
     nomAnalyse: string,
@@ -28,17 +28,17 @@ export class AnalyseLinePlot extends Analyse {
       data: this.data,
       layer: [
         {
-          mark: { type: 'line', point: true },
+          mark: { type: "line", point: true },
           encoding: {
             x: {
               field: this.xField,
               type: <StandardType>this.xType,
-              axis: { title: 'Année' },
+              axis: { title: "Année" },
             },
             y: {
               field: this.yField,
               type: <StandardType>this.yType,
-              axis: { title: 'Prix médian du m² (EUR)' },
+              axis: { title: "Prix médian du m² (EUR)" },
             },
             color: {
               field: this.colorField,

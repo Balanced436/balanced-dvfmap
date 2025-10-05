@@ -1,12 +1,12 @@
-<div *ngIf="legend" >
+<div *ngIf="legend">
   <app-legend [legend]="legend"></app-legend>
 </div>
 <ngb-alert
-        *ngIf="isloading"
-        type="info"
-        [dismissible]="false"
-        class="d-flex align-items-center gap-2 shadow-sm py-2 px-3"
-        style="
+  *ngIf="isloading"
+  type="info"
+  [dismissible]="false"
+  class="d-flex align-items-center gap-2 shadow-sm py-2 px-3"
+  style="
     position: fixed;
     top: 50%;
     left: 50%;
@@ -17,11 +17,28 @@
     background-color: #e9f5ff;
   "
 >
-    <div class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></div>
-    <span>Chargement de la carte…</span>
+  <div
+    class="spinner-border spinner-border-sm text-primary"
+    role="status"
+    aria-hidden="true"
+  ></div>
+  <span>Chargement de la carte…</span>
 </ngb-alert>
 
-<div [style.visibility]="isloading ? 'hidden' : 'visible'" class="w-auto" style="position:absolute; left: 0; right: 0;bottom: 0;justify-content: center; display: flex;z-index: 2000; padding:10px">
+<div
+  [style.visibility]="isloading ? 'hidden' : 'visible'"
+  class="w-auto"
+  style="
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    justify-content: center;
+    display: flex;
+    z-index: 2000;
+    padding: 10px;
+  "
+>
   <div>
     <div ngbDropdown class="d-inline-block">
       <button
@@ -131,12 +148,11 @@
   </div>
 </div>
 <div
-        id="map"
-        [ngClass]="{ reduit: analyses.length !== 0 }"
-        class="map-container"
-        leaflet
-        [leafletOptions]="options"
-        (leafletMapReady)="onMapReady($event)"
-        [style.visibility]="isloading ? 'hidden' : 'visible'"
+  id="map"
+  [ngClass]="{ reduit: analyses.length !== 0 }"
+  class="map-container"
+  leaflet
+  [leafletOptions]="options"
+  (leafletMapReady)="onMapReady($event)"
+  [style.visibility]="isloading ? 'hidden' : 'visible'"
 ></div>
-

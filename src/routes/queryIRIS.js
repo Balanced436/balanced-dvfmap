@@ -1,9 +1,9 @@
 const Pool = require("pg").Pool;
-require('dotenv').config();
+require("dotenv").config();
 const getPool = () => {
   const connectionString = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
-      : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
+    : `postgres://${process.env.POSTGRES_USER}:${process.env.POSTGRES_PASSWORD}@${process.env.HOST}:5432/dvf`;
 
   return new Pool({
     connectionString,
@@ -12,9 +12,8 @@ const getPool = () => {
 
 const pool = getPool();
 
-
 const prixMedian = (request, response) => {
-  const formeiris = request.body.data
+  const formeiris = request.body.data;
   pool.query(
     `
     SELECT
@@ -40,16 +39,16 @@ SELECT
     [formeiris],
     (error, results) => {
       if (error) {
-          return response.status(500).json({
-              success: false,
-              message: "Erreur serveur lors de la récupération des données.",
-          });
+        return response.status(500).json({
+          success: false,
+          message: "Erreur serveur lors de la récupération des données.",
+        });
       }
       response.status(200).json(results.rows);
-    }
+    },
   );
 };
 
 module.exports = {
-  prixMedian
+  prixMedian,
 };

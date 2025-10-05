@@ -1,7 +1,7 @@
-import * as L from 'leaflet';
-import { CONFIG } from '../configuration/config';
-import { HttpClientODS } from '../../services/http-client-open-data-soft.service';
-import { EventEmitter } from '@angular/core';
+import * as L from "leaflet";
+import { CONFIG } from "../configuration/config";
+import { HttpClientODS } from "../../services/http-client-open-data-soft.service";
+import { EventEmitter } from "@angular/core";
 export class Carte extends EventEmitter {
   private map!: L.Map;
   private layerControl = new L.Control.Layers();
@@ -10,7 +10,7 @@ export class Carte extends EventEmitter {
   }
 
   initMap() {
-    this.map = L.map('map', {
+    this.map = L.map("map", {
       center: <L.LatLngExpression>CONFIG.localisationReunion,
       zoom: CONFIG.zoom,
     });
@@ -30,7 +30,7 @@ export class Carte extends EventEmitter {
     http.getCommunes().subscribe((response) => {
       let layerGroupGeometrieCommunes = L.layerGroup();
       response.forEach((value) => {
-        let geometrie = value['geo_shape'];
+        let geometrie = value["geo_shape"];
         // let nom = value["com_name_upper"];
         // console.info(value);
         let myStyle = {
@@ -39,29 +39,29 @@ export class Carte extends EventEmitter {
         };
         let layer = L.geoJSON(JSON.parse(JSON.stringify(geometrie)))
           .setStyle(myStyle)
-          .on('mouseover', (e) => {
+          .on("mouseover", (e) => {
             let mouseover = { weight: 2, opacity: 0.9 };
             e.target.setStyle(mouseover);
           });
 
-        layer.on('mouseout', (e) => {
+        layer.on("mouseout", (e) => {
           let mouseover = { weight: 1, opacity: 0.5 };
           e.target.setStyle(mouseover);
         });
 
         layerGroupGeometrieCommunes.addLayer(
-          layer.on('click', (e: L.LeafletMouseEvent) => {
+          layer.on("click", (e: L.LeafletMouseEvent) => {
             // Emission d'un evenement
             this.emit({
-              typeEvenement: 'commune',
-              codeInsee: value['com_code'][0],
+              typeEvenement: "commune",
+              codeInsee: value["com_code"][0],
             });
           }),
         );
       });
       this.layerControl.addOverlay(
         layerGroupGeometrieCommunes,
-        'Géométrie-communes',
+        "Géométrie-communes",
       );
     });
   }
@@ -69,24 +69,24 @@ export class Carte extends EventEmitter {
     http.getEPCI().subscribe((response) => {
       let layerGroupGeometrieEpci = L.layerGroup();
       response.forEach((value) => {
-        let geometrie = value['geo_shape'];
+        let geometrie = value["geo_shape"];
         layerGroupGeometrieEpci.addLayer(
           L.geoJSON(JSON.parse(JSON.stringify(geometrie))),
         );
       });
-      this.layerControl.addOverlay(layerGroupGeometrieEpci, 'Géométrie-EPCI');
+      this.layerControl.addOverlay(layerGroupGeometrieEpci, "Géométrie-EPCI");
     });
   }
   private initIrisTiles(http: HttpClientODS) {
     http.getIRIS().subscribe((response) => {
       let layerGroupGeometrieEpci = L.layerGroup();
       response.forEach((value) => {
-        let geometrie = value['geo_shape'];
+        let geometrie = value["geo_shape"];
         layerGroupGeometrieEpci.addLayer(
           L.geoJSON(JSON.parse(JSON.stringify(geometrie))),
         );
       });
-      this.layerControl.addOverlay(layerGroupGeometrieEpci, 'Géométrie-IRIS');
+      this.layerControl.addOverlay(layerGroupGeometrieEpci, "Géométrie-IRIS");
     });
   }
 }

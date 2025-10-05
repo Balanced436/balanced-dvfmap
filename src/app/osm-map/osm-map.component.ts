@@ -8,101 +8,106 @@ import {
   EventEmitter,
   ChangeDetectorRef,
   NgZone,
-} from '@angular/core';
+} from "@angular/core";
 import {
-    Map,
-    ZoomAnimEvent,
-    Layer,
-    MapOptions,
-    tileLayer,
-    latLng,
-    geoJSON,
-    geoJson,
-    LeafletMouseEvent,
-    popup, gridLayer,
-} from 'leaflet';
-import { CONFIG } from '../configuration/config';
-import { HttpClientODS } from '../../services/http-client-open-data-soft.service';
-import 'leaflet.markercluster';
-import { PgsqlBack } from 'src/services/pgsql-back.service';
-import { Analyse } from '../models/analyse.model';
-import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgbActiveOffcanvas, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
-import { CanvasModule } from '../canvas/canvas.module';
-import { CommonModule } from '@angular/common';
-import { GeoJSON } from 'leaflet';
-import { Legend } from '../models/legend.model';
-import * as _ from 'lodash';
-import {forkJoin, tap} from "rxjs";
+  Map,
+  ZoomAnimEvent,
+  Layer,
+  MapOptions,
+  tileLayer,
+  latLng,
+  geoJSON,
+  geoJson,
+  LeafletMouseEvent,
+  popup,
+  gridLayer,
+} from "leaflet";
+import { CONFIG } from "../configuration/config";
+import { HttpClientODS } from "../../services/http-client-open-data-soft.service";
+import "leaflet.markercluster";
+import { PgsqlBack } from "src/services/pgsql-back.service";
+import { Analyse } from "../models/analyse.model";
+import { NgbNavModule } from "@ng-bootstrap/ng-bootstrap";
+import { NgbActiveOffcanvas, NgbOffcanvas } from "@ng-bootstrap/ng-bootstrap";
+import { CanvasModule } from "../canvas/canvas.module";
+import { CommonModule } from "@angular/common";
+import { GeoJSON } from "leaflet";
+import { Legend } from "../models/legend.model";
+import * as _ from "lodash";
+import { forkJoin, tap } from "rxjs";
 
 @Component({
-  selector: 'ngbd-offcanvas-content',
+  selector: "ngbd-offcanvas-content",
   standalone: true,
   imports: [CanvasModule, NgbNavModule, CommonModule],
   template: `
     <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
       <li [ngbNavItem]="1">
         <button ngbNavLink>Statistiques</button>
-          <ng-template ngbNavContent>
-              <div class="p-4">
-                  <h5 class="offcanvas-title text-black text-xl font-semibold mb-4">{{ nom }}</h5>
-                  <div *ngIf="stats" class="text-black space-y-2">
-                      <div>
-                          <strong>Prix médian du m<sup>2</sup> des maisons :</strong>
-                          {{
-                              stats['nombre_vente_maisons'] < 3
-                                      ? 'pas assez de données'
-                                      : (stats['prix_m2_median_maisons'] | currency: 'EUR')
-                          }}
-                      </div>
-                      <div>
-                          <strong>Prix médian du m<sup>2</sup> des appartements :</strong>
-                          {{
-                              stats['nombre_vente_appartements'] < 3
-                                      ? 'pas assez de données'
-                                      : (stats['prix_m2_median_appartements'] | currency: 'EUR')
-                          }}
-                      </div>
-                      <div>
-                          <strong>Nombre de maisons vendues :</strong>
-                          {{
-                              stats['nombre_vente_maisons'] || 0
-                          }}
-                      </div>
-                      <div>
-                          <strong>Nombre d'appartements vendus :</strong>
-                          {{
-                              stats['nombre_vente_appartements'] || 0
-                          }}
-                      </div>
-                  </div>
+        <ng-template ngbNavContent>
+          <div class="p-4">
+            <h5 class="offcanvas-title text-black text-xl font-semibold mb-4">
+              {{ nom }}
+            </h5>
+            <div *ngIf="stats" class="text-black space-y-2">
+              <div>
+                <strong>Prix médian du m<sup>2</sup> des maisons :</strong>
+                {{
+                  stats["nombre_vente_maisons"] < 3
+                    ? "pas assez de données"
+                    : (stats["prix_m2_median_maisons"] | currency: "EUR")
+                }}
               </div>
-          </ng-template>
-
+              <div>
+                <strong>Prix médian du m<sup>2</sup> des appartements :</strong>
+                {{
+                  stats["nombre_vente_appartements"] < 3
+                    ? "pas assez de données"
+                    : (stats["prix_m2_median_appartements"] | currency: "EUR")
+                }}
+              </div>
+              <div>
+                <strong>Nombre de maisons vendues :</strong>
+                {{ stats["nombre_vente_maisons"] || 0 }}
+              </div>
+              <div>
+                <strong>Nombre d'appartements vendus :</strong>
+                {{ stats["nombre_vente_appartements"] || 0 }}
+              </div>
+            </div>
+          </div>
+        </ng-template>
       </li>
-        <li [ngbNavItem]="2">
-            <button ngbNavLink class="text-base font-medium text-gray-700 hover:text-blue-600">
-                Infographies
-            </button>
-            <ng-template ngbNavContent>
-                <div class="p-4">
-                    <h5 class="offcanvas-title text-black text-xl font-semibold mb-4 px-1">
-                        {{ nom }}
-                    </h5>
-                </div>
-                    <div class="offcanvas-body border-1 border-dark px-0 py-0 flex-column justify-content-center">
-                        <div id="analyse" class="w-full border-1 "></div>
-                        <app-analyse-multiple [analyses]="analyses"></app-analyse-multiple>
-                    </div>
-            </ng-template>
-        </li>
+      <li [ngbNavItem]="2">
+        <button
+          ngbNavLink
+          class="text-base font-medium text-gray-700 hover:text-blue-600"
+        >
+          Infographies
+        </button>
+        <ng-template ngbNavContent>
+          <div class="p-4">
+            <h5
+              class="offcanvas-title text-black text-xl font-semibold mb-4 px-1"
+            >
+              {{ nom }}
+            </h5>
+          </div>
+          <div
+            class="offcanvas-body border-1 border-dark px-0 py-0 flex-column justify-content-center"
+          >
+            <div id="analyse" class="w-full border-1 "></div>
+            <app-analyse-multiple [analyses]="analyses"></app-analyse-multiple>
+          </div>
+        </ng-template>
+      </li>
     </ul>
     <div [ngbNavOutlet]="nav" class="mt-2"></div>
   `,
 })
 export class NgbdOffcanvasContent {
   @Input() analyses: Analyse[] = [];
-  @Input() nom: string = '';
+  @Input() nom: string = "";
   @Input() active: number = 2;
   @Input() stats: { [key: string]: number } | undefined;
   constructor(public activeOffcanvas: NgbActiveOffcanvas) {
@@ -110,17 +115,17 @@ export class NgbdOffcanvasContent {
   }
 }
 @Component({
-  selector: 'app-osm-map',
-  templateUrl: './osm-map.component.html',
-  styleUrls: ['./osm-map.component.css'],
+  selector: "app-osm-map",
+  templateUrl: "./osm-map.component.html",
+  styleUrls: ["./osm-map.component.css"],
 })
 export class OsmMapComponent implements OnInit, OnDestroy {
   choroplethView:
-    | 'None'
-    | 'nombre_vente_maisons'
-    | 'nombre_vente_appartements'
-    | 'prix_m2_median_maisons'
-    | 'prix_m2_median_appartements' = 'None';
+    | "None"
+    | "nombre_vente_maisons"
+    | "nombre_vente_appartements"
+    | "prix_m2_median_maisons"
+    | "prix_m2_median_appartements" = "None";
 
   activeLayer = geoJSON(); // geojson qui permet d'indiquer la couche active
   geojsonIRIS = geoJSON(); // Creates a geojson object for IRIS data
@@ -131,29 +136,29 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   // Quelques constantes
   defaultStyle = { weight: 1, opacity: 0.3, fillOpacity: 0 };
   hoverStyle = { weight: 2, opacity: 0.9, fillOpacity: 0.3 };
-  defaultStyleChorolopeth = { weight: 1, fillOpacity: 0.5, color: '#FFFFFF' };
-  hoverStyleChorolopeth = { weight: 5, fillOpacity: 0.6, color: '#B80000' };
-  popupOption = { className: 'leafletpopup', closeButton: false };
+  defaultStyleChorolopeth = { weight: 1, fillOpacity: 0.5, color: "#FFFFFF" };
+  hoverStyleChorolopeth = { weight: 5, fillOpacity: 0.6, color: "#B80000" };
+  popupOption = { className: "leafletpopup", closeButton: false };
 
   // On utilise le la couche departement comme couche active par défaut
-  activeLayerName = 'departement';
+  activeLayerName = "departement";
 
   map!: Map;
   zoom!: number;
   layers: Layer[] = [];
   layersControl: any;
   analyses!: Analyse[];
-    isloading: boolean = true;
-    myLayers: { [name: string]: GeoJSON } = {};
+  isloading: boolean = true;
+  myLayers: { [name: string]: GeoJSON } = {};
   legend!: Legend | undefined;
   descriptionsLegend: { [name: string]: string } = {
-    nombre_vente_maisons: 'Les ventes de maisons',
+    nombre_vente_maisons: "Les ventes de maisons",
     nombre_vente_appartements: "Les ventes d'appartements",
-    prix_m2_median_maisons: 'Prix médian des maisons',
-    prix_m2_median_appartements: 'Prix médian des appartements',
+    prix_m2_median_maisons: "Prix médian des maisons",
+    prix_m2_median_appartements: "Prix médian des appartements",
   };
 
-  departementClickHandler: (e: LeafletMouseEvent) => void =()=>{}
+  departementClickHandler: (e: LeafletMouseEvent) => void = () => {};
 
   @Output() map$: EventEmitter<Map> = new EventEmitter();
   @Output() zoom$: EventEmitter<number> = new EventEmitter();
@@ -183,7 +188,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   open(data: Analyse[], stats: Object, nom: string) {
     this.zone.run(() => {
       let canvasOptions = {
-        panelClass: 'bg-custom text-white',
+        panelClass: "bg-custom text-white",
       };
       const offcanvasRef = this.offcanvasService.open(
         NgbdOffcanvasContent,
@@ -208,12 +213,12 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     this.initEpciTiles(this.http);
     this.initDepartement(this.http);
     this.initIRIS(this.http);
-    this.activeLayer = this.myLayers['departement'];
+    this.activeLayer = this.myLayers["departement"];
 
-    this.descriptionsLegend['nombre_vente_maisons'];
-    this.descriptionsLegend['nombre_vente_appartements'];
-    this.descriptionsLegend['prix_m2_median_maisons'];
-    this.descriptionsLegend['prix_m2_median_appartements'];
+    this.descriptionsLegend["nombre_vente_maisons"];
+    this.descriptionsLegend["nombre_vente_appartements"];
+    this.descriptionsLegend["prix_m2_median_maisons"];
+    this.descriptionsLegend["prix_m2_median_appartements"];
   }
   ngOnDestroy() {
     this.map.clearAllEventListeners;
@@ -247,29 +252,31 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             .subscribe((dataPrixMedian) => {
               // Effectuer une requête HTTP pour obtenir les statistiques du département
               this.postresql.getStatsDepartement().subscribe((stats) => {
-                let geometrie = value['geo_shape'];
+                let geometrie = value["geo_shape"];
                 let myJson = JSON.parse(JSON.stringify(geometrie));
                 let myGeoJson;
 
                 // Ajouter les données aux propriétés GeoJSON
-                myJson['properties']['vente'] = dataVente;
-                myJson['properties']['prix_median'] = dataPrixMedian;
-                myJson['properties']['nom'] = 'La Réunion';
-                myJson['properties']['stats'] = stats;
+                myJson["properties"]["vente"] = dataVente;
+                myJson["properties"]["prix_median"] = dataPrixMedian;
+                myJson["properties"]["nom"] = "La Réunion";
+                myJson["properties"]["stats"] = stats;
                 myGeoJson = geoJSON(myJson);
 
                 // Appliquer le style par défaut à la couche GeoJSON
                 myGeoJson.setStyle(this.defaultStyle);
 
                 // Configurer le gestionnaire d'événements pour les clics
-                  this.departementClickHandler = this.getAnalyseOnClick(this.postresql.getAnalyseDepartement);
+                this.departementClickHandler = this.getAnalyseOnClick(
+                  this.postresql.getAnalyseDepartement,
+                );
                 let createdHandler = this.getAnalyseOnClick(
                   this.postresql.getAnalyseDepartement,
                 );
-                  myGeoJson.on('click', this.departementClickHandler);
+                myGeoJson.on("click", this.departementClickHandler);
 
                 // Ajouter la couche GeoJSON à la couche des départements avec le style de base
-                this.myLayers['departement'].addLayer(
+                this.myLayers["departement"].addLayer(
                   this.basicStyle(myGeoJson),
                 );
               });
@@ -287,7 +294,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
     // Effectuer une requête HTTP pour obtenir les données des EPCI
     http.getEPCI().subscribe((response) => {
       response.forEach((value) => {
-        let epciCode = value['epci_code'][0];
+        let epciCode = value["epci_code"][0];
         // Effectuer une requête HTTP pour obtenir les données de vente de l'EPCI
 
         this.postresql.getVenteEpci(epciCode).subscribe((dataVente) => {
@@ -297,28 +304,28 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             .subscribe((dataPrixMedian) => {
               // Effectuer une requête HTTP pour obtenir les statistiques de l'EPCI
               this.postresql.getStatsEpci(epciCode).subscribe((stats) => {
-                let epciName = value['epci_name'];
-                let geometrie = value['geo_shape'];
+                let epciName = value["epci_name"];
+                let geometrie = value["geo_shape"];
                 let myJson = JSON.parse(JSON.stringify(geometrie));
                 let myGeoJson;
 
                 // Ajouter les données aux propriétés GeoJSON
-                myJson['properties']['vente'] = dataVente;
-                myJson['properties']['prix_median'] = dataPrixMedian;
-                myJson['properties']['nom'] = epciName;
-                myJson['properties']['stats'] = stats;
+                myJson["properties"]["vente"] = dataVente;
+                myJson["properties"]["prix_median"] = dataPrixMedian;
+                myJson["properties"]["nom"] = epciName;
+                myJson["properties"]["stats"] = stats;
                 myGeoJson = geoJSON(myJson);
 
                 // Lier une fenêtre contextuelle à la couche GeoJSON
-                myGeoJson.bindPopup('' + epciName, this.popupOption);
+                myGeoJson.bindPopup("" + epciName, this.popupOption);
                 let createdHandler = this.getAnalyseOnClick(
                   this.postresql.getAnalyseParEpci,
                 );
                 // Configurer le gestionnaire d'événements pour les clics
-                myGeoJson.on('click', (_e: LeafletMouseEvent) => {
+                myGeoJson.on("click", (_e: LeafletMouseEvent) => {
                   createdHandler(_e);
                 });
-                this.myLayers['intercommune'].addLayer(
+                this.myLayers["intercommune"].addLayer(
                   this.basicStyle(myGeoJson),
                 );
               });
@@ -333,53 +340,53 @@ export class OsmMapComponent implements OnInit, OnDestroy {
    * @param http Le service HttpClientODS utilisé pour effectuer les requêtes HTTP.
    */
   private initCommunesTiles(http: HttpClientODS) {
-      http.getCommunes().subscribe((response) => {
-          const communeRequests = response.map((value) => {
-              const communeCode = value['com_code'][0];
-              const nomCommune = value['com_name'];
-              const geometrie = value['geo_shape'];
+    http.getCommunes().subscribe((response) => {
+      const communeRequests = response.map((value) => {
+        const communeCode = value["com_code"][0];
+        const nomCommune = value["com_name"];
+        const geometrie = value["geo_shape"];
 
-              return forkJoin({
-                  vente: this.postresql.getVenteCommune(communeCode),
-                  prixMedian: this.postresql.getPrixMedianCommune(communeCode),
-                  stats: this.postresql.getStatsCommune(communeCode),
-              }).pipe(
-                  // traitement final pour chaque commune
-                  tap(({ vente, prixMedian, stats }) => {
-                      const myJson = JSON.parse(JSON.stringify(geometrie));
-                      myJson['properties']['vente'] = vente;
-                      myJson['properties']['prix_median'] = prixMedian;
-                      myJson['properties']['nom'] = nomCommune;
-                      myJson['properties']['stats'] = stats;
+        return forkJoin({
+          vente: this.postresql.getVenteCommune(communeCode),
+          prixMedian: this.postresql.getPrixMedianCommune(communeCode),
+          stats: this.postresql.getStatsCommune(communeCode),
+        }).pipe(
+          // traitement final pour chaque commune
+          tap(({ vente, prixMedian, stats }) => {
+            const myJson = JSON.parse(JSON.stringify(geometrie));
+            myJson["properties"]["vente"] = vente;
+            myJson["properties"]["prix_median"] = prixMedian;
+            myJson["properties"]["nom"] = nomCommune;
+            myJson["properties"]["stats"] = stats;
 
-                      const myGeoJson = geoJSON(myJson);
-                      const createdHandler = this.getAnalyseOnClick(this.postresql.getAnalyseParCommune);
+            const myGeoJson = geoJSON(myJson);
+            const createdHandler = this.getAnalyseOnClick(
+              this.postresql.getAnalyseParCommune,
+            );
 
-                      myGeoJson.bindPopup(nomCommune, this.popupOption);
-                      myGeoJson.on('click', (_e: LeafletMouseEvent) => createdHandler(_e));
-                      this.myLayers['commune'].addLayer(this.basicStyle(myGeoJson));
-                  })
-              );
-          });
-
-          // Attendre que toutes les communes soient traitées
-          forkJoin(communeRequests).subscribe({
-              next: () => {
-                  this.setActiveLayer('commune');
-                  this.setChloroplethView('nombre_vente_appartements')
-
-                  this.isloading = false
-              },
-              error: (e) => console.error(e),
-          });
+            myGeoJson.bindPopup(nomCommune, this.popupOption);
+            myGeoJson.on("click", (_e: LeafletMouseEvent) =>
+              createdHandler(_e),
+            );
+            this.myLayers["commune"].addLayer(this.basicStyle(myGeoJson));
+          }),
+        );
       });
+
+      // Attendre que toutes les communes soient traitées
+      forkJoin(communeRequests).subscribe({
+        next: () => {
+          this.setActiveLayer("commune");
+          this.setChloroplethView("nombre_vente_appartements");
+
+          this.isloading = false;
+        },
+        error: (e) => console.error(e),
+      });
+    });
   }
 
-
-
-
-
-    /**
+  /**
    *
    * Initialise les données IRIS
    *
@@ -388,19 +395,19 @@ export class OsmMapComponent implements OnInit, OnDestroy {
   private initIRIS(http: HttpClientODS) {
     http.getIRIS().subscribe((response) => {
       response.forEach((value) => {
-        let nomIRIS = value['iris_name'];
-        let geometrie = value['geo_shape'];
+        let nomIRIS = value["iris_name"];
+        let geometrie = value["geo_shape"];
         let myjson = JSON.parse(JSON.stringify(geometrie));
-        myjson['properties']['nom'] = nomIRIS;
+        myjson["properties"]["nom"] = nomIRIS;
         let mygeoJSON = geoJSON(myjson);
-        this.myLayers['iris'].addLayer(this.basicStyle(mygeoJSON));
-        mygeoJSON.bindPopup('' + nomIRIS, this.popupOption);
+        this.myLayers["iris"].addLayer(this.basicStyle(mygeoJSON));
+        mygeoJSON.bindPopup("" + nomIRIS, this.popupOption);
       });
       let createdHandler = this.getAnalyseOnClick(
         this.postresql.getanalyseIRIS,
       );
-      this.myLayers['iris'].getLayers().forEach((layer) => {
-        layer.on('click', (_e: LeafletMouseEvent) => {
+      this.myLayers["iris"].getLayers().forEach((layer) => {
+        layer.on("click", (_e: LeafletMouseEvent) => {
           createdHandler(_e);
         });
       });
@@ -415,11 +422,11 @@ export class OsmMapComponent implements OnInit, OnDestroy {
    */
   public basicStyle(x: GeoJSON) {
     x.setStyle(this.defaultStyle);
-    x.on('mouseover', (e) => {
+    x.on("mouseover", (e) => {
       e.target.setStyle(this.hoverStyle);
       e.target.openPopup();
     });
-    x.on('mouseout', (e) => {
+    x.on("mouseout", (e) => {
       e.target.setStyle(this.defaultStyle);
       e.target.closePopup();
     });
@@ -463,17 +470,15 @@ export class OsmMapComponent implements OnInit, OnDestroy {
         },
         _e.sourceTarget.feature.properties.nom,
       );
-        let stat = _e.sourceTarget.feature.properties.stats[0];
-        const isvalid = Object.entries(stat).map(([key,val])=>val).every((e)=>e)
-        if (isvalid){
-            this.open(
-            this.analyses,
-            stat,
-            _e.sourceTarget.feature.properties.nom,
-          );
-        }else {
-            /*pass*/
-        }
+      let stat = _e.sourceTarget.feature.properties.stats[0];
+      const isvalid = Object.entries(stat)
+        .map(([key, val]) => val)
+        .every((e) => e);
+      if (isvalid) {
+        this.open(this.analyses, stat, _e.sourceTarget.feature.properties.nom);
+      } else {
+        /*pass*/
+      }
     };
   }
 
@@ -488,14 +493,14 @@ export class OsmMapComponent implements OnInit, OnDestroy {
    */
   setChloroplethView(
     view:
-      | 'nombre_vente_maisons'
-      | 'nombre_vente_appartements'
-      | 'prix_m2_median_maisons'
-      | 'prix_m2_median_appartements',
+      | "nombre_vente_maisons"
+      | "nombre_vente_appartements"
+      | "prix_m2_median_maisons"
+      | "prix_m2_median_appartements",
   ) {
     let tmp = this.activeLayerName;
-    this.choroplethView = this.choroplethView == view ? 'None' : view;
-    if (this.choroplethView == 'None') {
+    this.choroplethView = this.choroplethView == view ? "None" : view;
+    if (this.choroplethView == "None") {
       this.legend = undefined;
     }
     this.removeCurrentLayer();
@@ -505,7 +510,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
    * Supprime la couche active actuelle de la carte.
    */
   removeCurrentLayer() {
-    this.activeLayerName = 'None';
+    this.activeLayerName = "None";
     this.map.removeLayer(this.activeLayer);
   }
   /**
@@ -526,7 +531,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       this.removeCurrentLayer();
     } else {
       this.activeLayerName = layername;
-      if (this.choroplethView != 'None' && layername != 'departement') {
+      if (this.choroplethView != "None" && layername != "departement") {
         /**
          * Crée une nouvelle instance de la classe Legend pour la couche active.
          */
@@ -537,7 +542,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           this.choroplethView,
           {
             prob: [0.2, 0.4, 0.6, 0.8],
-            couleur: ['#961215', '#cb181d', '#fb6a4a', '#fcae91', '#fee5d9'],
+            couleur: ["#961215", "#cb181d", "#fb6a4a", "#fcae91", "#fee5d9"],
           },
         );
         /**
@@ -552,12 +557,12 @@ export class OsmMapComponent implements OnInit, OnDestroy {
           style: this.legend.getStyler(),
         });
         this.activeLayer.getLayers().forEach((layer) => {
-          layer.on('mouseover', (e) => {
+          layer.on("mouseover", (e) => {
             // ... (actions à effectuer lors du survol de la souris)
             // Récupérer les données de la couche sur lequel la souris survole
             e.target.setStyle(this.hoverStyleChorolopeth);
             let nom = e.target.feature.properties.nom[0];
-            let popup = '';
+            let popup = "";
             let nbMaisonsVendues =
               e.target.feature.properties.stats[0].nombre_vente_maisons;
             let nbAppartementsVendues =
@@ -573,65 +578,65 @@ export class OsmMapComponent implements OnInit, OnDestroy {
               nbAppartementsVendues == null ? 0 : nbAppartementsVendues;
             prixMedianMaisons =
               nbMaisonsVendues < 3
-                ? 'Pas assez de données'
-                : prixMedianMaisons + '€';
+                ? "Pas assez de données"
+                : prixMedianMaisons + "€";
             prixMedianAppartements =
               nbAppartementsVendues < 3
-                ? 'Pas assez de données'
-                : prixMedianAppartements + '€';
+                ? "Pas assez de données"
+                : prixMedianAppartements + "€";
             switch (this.choroplethView) {
               // Formater les données pour l'affichage dans une popup
-              case 'nombre_vente_maisons':
+              case "nombre_vente_maisons":
                 popup =
-                  '<div>' +
+                  "<div>" +
                   nom +
-                  '<br>' +
-                  'Maisons vendues: ' +
+                  "<br>" +
+                  "Maisons vendues: " +
                   nbMaisonsVendues +
-                  '<br>' +
-                  '</div>';
+                  "<br>" +
+                  "</div>";
                 break;
-              case 'nombre_vente_appartements':
+              case "nombre_vente_appartements":
                 popup =
-                  '<div>' +
+                  "<div>" +
                   nom +
-                  '<br>' +
-                  'Appartements vendus: ' +
+                  "<br>" +
+                  "Appartements vendus: " +
                   nbAppartementsVendues +
-                  '<br>' +
-                  '</div>';
+                  "<br>" +
+                  "</div>";
                 break;
-              case 'prix_m2_median_maisons':
+              case "prix_m2_median_maisons":
                 popup =
-                  '<div>' +
+                  "<div>" +
                   nom +
-                  '<br>' +
-                  'Prix median du m<sup>2</sup> : ' +
+                  "<br>" +
+                  "Prix median du m<sup>2</sup> : " +
                   prixMedianMaisons +
-                  '<br>' +
-                  '</div>';
+                  "<br>" +
+                  "</div>";
                 break;
-              case 'prix_m2_median_appartements':
+              case "prix_m2_median_appartements":
                 popup =
-                  '<div>' +
+                  "<div>" +
                   nom +
-                  '<br>' +
-                  'Prix median du m<sup>2</sup> : ' +
+                  "<br>" +
+                  "Prix median du m<sup>2</sup> : " +
                   prixMedianAppartements +
-                  '<br>' +
-                  '</div>';
+                  "<br>" +
+                  "</div>";
                 break;
             }
             layer.bindPopup(popup, this.popupOption).openPopup();
           });
           // ... (actions à effectuer lors de la sortie de la souris)
 
-          layer.on('mouseout', (e) => {
+          layer.on("mouseout", (e) => {
             e.target.setStyle(this.defaultStyleChorolopeth);
             layer.closePopup();
           });
         });
-        this.activeLayer.on('click', (_e: LeafletMouseEvent) => {
+        this.activeLayer.on("click", (_e: LeafletMouseEvent) => {
           createdHandler(_e);
         });
         this.map.addLayer(this.activeLayer);
@@ -653,20 +658,20 @@ export class OsmMapComponent implements OnInit, OnDestroy {
       _e: LeafletMouseEvent,
     ) => {};
     switch (layername) {
-      case 'iris':
+      case "iris":
         handler = this.getAnalyseOnClick(this.postresql.getanalyseIRIS);
         break;
-      case 'commune':
+      case "commune":
         handler = this.getAnalyseOnClick(this.postresql.getAnalyseParCommune);
         break;
-      case 'intercommune':
+      case "intercommune":
         handler = this.getAnalyseOnClick(this.postresql.getAnalyseParEpci);
         break;
-      case 'departement':
+      case "departement":
         handler = this.getAnalyseOnClick(this.postresql.getAnalyseDepartement);
         break;
       default:
-        throw new Error('Nom de couche non pris en charge.');
+        throw new Error("Nom de couche non pris en charge.");
     }
     return handler;
   }

@@ -1,6 +1,6 @@
-import { TopLevelSpec, compile } from 'vega-lite';
-import { StandardType } from 'vega-lite/build/src/type';
-import { Analyse } from './analyse.model';
+import { TopLevelSpec, compile } from "vega-lite";
+import { StandardType } from "vega-lite/build/src/type";
+import { Analyse } from "./analyse.model";
 export class AnalyseBar extends Analyse {
   constructor(
     nomAnalyse: string,
@@ -28,17 +28,17 @@ export class AnalyseBar extends Analyse {
       data: this.data,
       layer: [
         {
-          mark: { type: 'bar' },
+          mark: { type: "bar" },
           encoding: {
             x: {
               field: this.xField,
               type: <StandardType>this.xType,
-              axis: { title: 'Année' },
+              axis: { title: "Année" },
             },
             y: {
               field: this.yField,
               type: <StandardType>this.yType,
-              axis: { title: 'Nombre de vente' },
+              axis: { title: "Nombre de vente" },
             },
             color: {
               field: this.colorField,
