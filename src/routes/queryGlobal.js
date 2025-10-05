@@ -3,7 +3,7 @@ const Pool = require("pg").Pool;
 const getPool = () => {
   const connectionString = process.env.DATABASE_URL
     ? process.env.DATABASE_URL
-    : "postgres://postgres:sagrandmere@localhost:5432/dvf";
+    : "postgres://postgres:sagrandmere@db:5432/dvf";
 
   console.info(`Utilisation de la base de données : ${connectionString}\n`);
   return new Pool({
@@ -80,7 +80,11 @@ group by anneemut
 ORDER by anneemut ASC`,
     (error, results) => {
       if (error) {
-        throw error;
+        console.info(error);
+          return response.status(500).json({
+              success: false,
+              message: "Erreur serveur lors de la récupération des données.",
+          });
       }
       response.status(200).json(results.rows);
     }
@@ -123,7 +127,10 @@ const typeLocalGlobal = (request, response) => {
       anneemut ASC;`,
     (error, results) => {
       if (error) {
-        throw error;
+          return response.status(500).json({
+              success: false,
+              message: "Erreur serveur lors de la récupération des données.",
+          });
       }
       response.status(200).json(results.rows);
     }
@@ -153,7 +160,10 @@ and nbcomm = 1
 group by l_codinsee`,
     (error, results) => {
       if (error) {
-        throw error;
+          return response.status(500).json({
+              success: false,
+              message: "Erreur serveur lors de la récupération des données.",
+          });
       }
       response.status(200).json(results.rows);
     }
@@ -186,7 +196,10 @@ GROUP BY anneemut
 ORDER BY anneemut ASC`,
     (error, results) => {
       if (error) {
-        throw error;
+          return response.status(500).json({
+              success: false,
+              message: "Erreur serveur lors de la récupération des données.",
+          });
       }
       response.status(200).json(results.rows);
     }
@@ -213,7 +226,10 @@ AND nblocmai = 0
 AND nblocapt > 0`,
     (error, results) => {
       if (error) {
-        throw error;
+          return response.status(500).json({
+              success: false,
+              message: "Erreur serveur lors de la récupération des données.",
+          });
       }
       response.status(200).json(results.rows);
     }
@@ -245,7 +261,10 @@ const stats = (request, response) => {
     FROM stats_maisons FULL OUTER JOIN stats_appartements on TRUE`,
     (error, results) => {
       if (error) {
-        throw error;
+          return response.status(500).json({
+              success: false,
+              message: "Erreur serveur lors de la récupération des données.",
+          });
       }
       response.status(200).json(results.rows);
     }

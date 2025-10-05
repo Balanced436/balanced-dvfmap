@@ -1,30 +1,25 @@
-FROM debian:bullseye as builder
+# ----------- Builder Stage -----------
+FROM node:20.10.0 AS builder
 
-ENV PATH=/usr/local/node/bin:$PATH
-ARG NODE_VERSION=19.6.0
-
-RUN apt-get update; apt install -y curl python-is-python3 pkg-config build-essential && \
-    curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
-    /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
-rm -rf /tmp/node-build-master
-
-RUN mkdir /app
 WORKDIR /app
 
-COPY DVF .
+# Copier tous les fichiers nécessaires au projet Angular
+COPY . .
 
-RUN npm install && npm run build
+# Installer les dépendances et construire l'app
+RUN npm install
+RUN npm run build
 
-
+# ----------- Runtime Stage -----------
 FROM debian:bullseye-slim
 
 LABEL fly_launch_runtime="nodejs"
 
-COPY --from=builder /usr/local/node /usr/local/node
+COPY --from=builder /usr/local/ /usr/local/
 COPY --from=builder /app /app
 
 WORKDIR /app
-ENV NODE_ENV production
-ENV PATH /usr/local/node/bin:$PATH
+ENV NODE_ENV=production
+ENV PATH=/usr/local/bin:$PATH
 
-CMD [ "npm", "run", "start" ]
+CMD ["npm", "run", "start"]
