@@ -25,7 +25,6 @@ export class PgsqlBack {
     data: { vente: object; prix_median: object },
     nom: string,
   ): Analyse[] {
-    console.info(data.vente);
     return [
       new AnalyseLinePlot(
         'an2',

@@ -272,8 +272,6 @@ export class OsmMapComponent implements OnInit, OnDestroy {
                 this.myLayers['departement'].addLayer(
                   this.basicStyle(myGeoJson),
                 );
-
-                  console.info(this.myLayers['departement']);
               });
             });
         });
@@ -474,7 +472,7 @@ export class OsmMapComponent implements OnInit, OnDestroy {
             _e.sourceTarget.feature.properties.nom,
           );
         }else {
-            console.info("debug alerte")
+            /*pass*/
         }
     };
   }

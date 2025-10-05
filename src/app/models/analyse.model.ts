@@ -138,7 +138,6 @@ export abstract class Analyse {
     const vegaSpec = compile(this.createSpec(), {
       config: this.getConfig(),
     }).spec;
-    console.log(vegaSpec.data);
 
     this.appendDiv();
     return new vega.View(vega.parse(vegaSpec))

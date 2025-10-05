@@ -27,7 +27,6 @@ const pool = getPool();
  */
 
 const natureMutationGlobal = (request, response) => {
-  console.info("natureMutationGlobal");
   pool.query(
     `WITH total_mutations AS (SELECT COUNT(*) FROM dvf.mutation)
     SELECT
@@ -62,7 +61,6 @@ const natureMutationGlobal = (request, response) => {
  */
 
 const vente = (request, response) => {
-  console.info("venteAnneeGlobal");
   pool.query(
     `select
     anneemut,
@@ -109,7 +107,6 @@ ORDER by anneemut ASC`,
  */
 
 const typeLocalGlobal = (request, response) => {
-  console.info("typeLocalGlobal");
   pool.query(
     `SELECT
       anneemut,
@@ -139,7 +136,6 @@ const typeLocalGlobal = (request, response) => {
 
 
 const typeLocalVenduParCommune = (request, response) => {
-  console.info("Type et nombre de local vendu par commune");
   pool.query(
     `SELECT
     l_codinsee::TEXT,
@@ -206,7 +202,6 @@ ORDER BY anneemut ASC`,
 };
 
 const prixMedianMaisonAppartement = (request, response) => {
-  console.info("Prix median des appartements et des maisons");
   pool.query(
     `SELECT
     CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY valeurfonc) AS NUMERIC(10,2)) as prix_m2_median,

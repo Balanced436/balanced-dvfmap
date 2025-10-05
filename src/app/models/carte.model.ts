@@ -33,7 +33,6 @@ export class Carte extends EventEmitter {
         let geometrie = value['geo_shape'];
         // let nom = value["com_name_upper"];
         // console.info(value);
-        console.log(value);
         let myStyle = {
           weight: 1,
           opacity: 0.5,

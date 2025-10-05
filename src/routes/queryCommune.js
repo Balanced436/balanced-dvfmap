@@ -60,7 +60,6 @@ SELECT
 */
 const natureMutationCommune = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("natureMutationCommune : " + codeinsee);
   pool.query(
     `WITH total_mutations AS (
       SELECT COUNT(*) FROM dvf.mutation
@@ -105,7 +104,6 @@ const natureMutationCommune = (request, response) => {
  */
 const typeLocalCommune = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("typeLocalCommune : " + codeinsee);
   pool.query(
     `SELECT
       anneemut,
@@ -154,7 +152,6 @@ const typeLocalCommune = (request, response) => {
 
 const venteAnneeCommune = (request, response) => {
   const codeinsee = request.params.codeinsee;
-  console.info("venteAnneeCommune : " + codeinsee);
   pool.query(
     `SELECT COUNT(*) as nombre_ventes, anneemut
     FROM
